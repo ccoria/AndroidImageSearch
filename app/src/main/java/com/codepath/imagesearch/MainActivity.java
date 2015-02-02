@@ -1,6 +1,7 @@
 package com.codepath.imagesearch;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -53,13 +54,14 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
+        if (id  == R.id.settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
-
-    /*
-
-
-     */
 
     public void onClickSearch(final View view) {
         EditText etQuery = (EditText) findViewById(R.id.etQuery);
