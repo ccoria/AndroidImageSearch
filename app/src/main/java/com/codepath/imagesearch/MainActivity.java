@@ -31,12 +31,26 @@ public class MainActivity extends ActionBarActivity {
     Context context;
     GridView gvResults;
     ImagesAdapter imgAdapter;
+    GoogleAPIClient apiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        gvResults = (GridView) findViewById(R.id.gvResults);
         context = this;
+
+        // Attach the listener to the AdapterView onCreate
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                apiClient.setNextPage();
+                getImages();
+                // or customLoadMoreDataFromApi(totalItemsCount);
+            }
+        });
     }
 
 
@@ -67,16 +81,14 @@ public class MainActivity extends ActionBarActivity {
         EditText etQuery = (EditText) findViewById(R.id.etQuery);
         String strQuery = etQuery.getText().toString();
 
-        gvResults = (GridView) findViewById(R.id.gvResults);
+        if (imgAdapter != null) imgAdapter.clear();
 
-        getImages(strQuery, 0);
-        getImages(strQuery, 8);
-
-
+        this.apiClient = new GoogleAPIClient(strQuery);
+        getImages();
     }
 
-    public void getImages(String query, int offset) {
-        GoogleAPIClient.getImages(query, offset, new JsonHttpResponseHandler() {
+    public void getImages() {
+        apiClient.getImages(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
@@ -109,5 +121,9 @@ public class MainActivity extends ActionBarActivity {
                 Log.i(TAG, responseString);
             }
         });
+    }
+
+    private GoogleAPIClient getApiClient(String query) {
+        return (this.apiClient == null) ? new GoogleAPIClient(query) : this.apiClient;
     }
 }
