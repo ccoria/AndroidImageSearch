@@ -26,8 +26,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
-    private final String TAG = ">> Main Activity";
-    private Context context;
+    final String TAG = ">> Main Activity";
+    Context context;
+    GridView gvResults;
+    ImagesAdapter imgAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,16 @@ public class MainActivity extends ActionBarActivity {
         EditText etQuery = (EditText) findViewById(R.id.etQuery);
         String strQuery = etQuery.getText().toString();
 
-        GoogleAPIClient.getImages(strQuery, new JsonHttpResponseHandler() {
+        gvResults = (GridView) findViewById(R.id.gvResults);
+
+        getImages(strQuery, 0);
+        getImages(strQuery, 8);
+
+
+    }
+
+    public void getImages(String query, int offset) {
+        GoogleAPIClient.getImages(query, offset, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
@@ -74,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
                     for (int i = 0; i < results.length(); i++) {
                         try {
                             JSONObject result = results.getJSONObject(i);
-                            ImageModel img = new ImageModel(result.getString("url"), result.getString("tbUrl"));
+                            ImageModel img = new ImageModel(result.getString("url"), result.getString("tbUrl"), result.getString("titleNoFormatting"));
                             images.add(img);
                         } catch (JSONException jsonException) {
                             Log.e(TAG, "JSON ERROR");
@@ -82,10 +93,12 @@ public class MainActivity extends ActionBarActivity {
                         }
                     }
 
-                    ImagesAdapter imgAdapter = new ImagesAdapter(context, images);
-                    Log.i(TAG, "COUNT:: " + images.size());
-                    GridView gvResults = (GridView) findViewById(R.id.gvResults);
-                    gvResults.setAdapter(imgAdapter);
+                    if (imgAdapter == null) {
+                        imgAdapter = new ImagesAdapter(context, images);
+                        gvResults.setAdapter(imgAdapter);
+                    } else {
+                        imgAdapter.addAll(images);
+                    }
                 }
             }
 
@@ -94,7 +107,5 @@ public class MainActivity extends ActionBarActivity {
                 Log.i(TAG, responseString);
             }
         });
-
-        Toast.makeText(this, strQuery, Toast.LENGTH_SHORT).show();
     }
 }

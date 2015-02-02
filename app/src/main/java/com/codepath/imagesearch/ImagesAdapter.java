@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -30,9 +31,13 @@ public class ImagesAdapter extends ArrayAdapter<ImageModel> {
                     .inflate(R.layout.thumb_view, parent, false);
         }
 
+        // Thumbnail
         ImageView ivThumb = (ImageView) convertView.findViewById(R.id.ivThumb);
-        Log.i(TAG, "thumb_url: " + imageModel.getThumbnail_url());
         Picasso.with(this.getContext()).load(imageModel.getThumbnail_url()).into(ivThumb);
+
+        // Title
+        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvCaption);
+        tvTitle.setText(imageModel.getTitle());
 
         return convertView;
     }

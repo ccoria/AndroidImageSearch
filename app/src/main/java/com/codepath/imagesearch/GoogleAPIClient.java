@@ -21,9 +21,11 @@ public class GoogleAPIClient {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
-    public static void getImages (String query, JsonHttpResponseHandler responseHandler) {
+    public static void getImages (String query, int offset, JsonHttpResponseHandler responseHandler) {
         RequestParams requestParams = new RequestParams();
         requestParams.put("v", "1.0");
+        requestParams.put("rsz", 8);
+        requestParams.put("start", offset);
         requestParams.put("q", query);
 
         client.get(BASE_URL + IMG_ENDPOINT, requestParams, responseHandler);

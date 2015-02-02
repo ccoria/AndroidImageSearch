@@ -7,10 +7,16 @@ public class ImageModel {
 
     private String url;
     private String thumbnail_url;
+    private String title;
 
-    public ImageModel(String url, String thumbnail_url) {
+    public ImageModel(String url, String thumbnail_url, String title) {
         this.url = url;
         this.thumbnail_url = thumbnail_url;
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getThumbnail_url() {
