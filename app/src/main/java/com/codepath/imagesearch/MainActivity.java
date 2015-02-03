@@ -42,8 +42,6 @@ public class MainActivity extends ActionBarActivity {
     GoogleAPIClient apiClient;
     ImageFiltersModel currentFilters;
 
-    public static ArrayList imagesURLs = new ArrayList();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +49,7 @@ public class MainActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.drawable.ic_launcher);
-        
+
         currentFilters = new ImageFiltersModel();
 
         gvResults = (GridView) findViewById(R.id.gvResults);

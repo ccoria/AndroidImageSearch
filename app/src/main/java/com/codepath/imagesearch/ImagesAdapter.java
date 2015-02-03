@@ -25,13 +25,6 @@ public class ImagesAdapter extends ArrayAdapter<ImageModel> {
         super(context, R.layout.thumb_view, images);
     }
 
-    public ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
-
-    public ImageModel getModelFromImageView(ImageView ivThumb) {
-        int index = imageViews.indexOf(ivThumb);
-        return this.getItem(index);
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageModel imageModel = getItem(position);
