@@ -49,6 +49,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
         currentFilters = new ImageFiltersModel();
 
         gvResults = (GridView) findViewById(R.id.gvResults);
