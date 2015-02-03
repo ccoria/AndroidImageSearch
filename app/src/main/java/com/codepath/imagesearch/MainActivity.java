@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -27,16 +28,22 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
+    static final int settingsActivity = 50;
+
     final String TAG = ">> Main Activity";
     Context context;
     GridView gvResults;
     ImagesAdapter imgAdapter;
     GoogleAPIClient apiClient;
+    ImageFiltersModel currentFilters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currentFilters = new ImageFiltersModel();
+
         gvResults = (GridView) findViewById(R.id.gvResults);
         context = this;
 
@@ -71,19 +78,41 @@ public class MainActivity extends ActionBarActivity {
 
         if (id  == R.id.settings) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
+            settingsIntent.putExtra("filters", this.apiClient.getFilters());
+            startActivityForResult(settingsIntent, MainActivity.settingsActivity);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Hand all the form data
+        if (requestCode == 50) {
+            if (resultCode == RESULT_OK) {
+                currentFilters =
+                        (ImageFiltersModel) data.getSerializableExtra("filters");
+
+                startGrid();
+            }
+        }
+
+        //Toast YES or NO vased on if age is greater 21
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void onClickSearch(final View view) {
-        EditText etQuery = (EditText) findViewById(R.id.etQuery);
+        startGrid();
+    }
+
+    private void startGrid () {
+        EditText etQuery = (EditText) findViewById(R.id.etQuery); //TODO extract
         String strQuery = etQuery.getText().toString();
 
         if (imgAdapter != null) imgAdapter.clear();
 
-        this.apiClient = new GoogleAPIClient(strQuery);
+        this.apiClient = new GoogleAPIClient(strQuery, currentFilters);
+
         getImages();
     }
 
@@ -121,9 +150,5 @@ public class MainActivity extends ActionBarActivity {
                 Log.i(TAG, responseString);
             }
         });
-    }
-
-    private GoogleAPIClient getApiClient(String query) {
-        return (this.apiClient == null) ? new GoogleAPIClient(query) : this.apiClient;
     }
 }

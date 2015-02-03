@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by ccoria on 2/1/15.
  */
@@ -19,19 +21,18 @@ public class GoogleAPIClient {
     private final String BASE_URL = "https://ajax.googleapis.com/ajax/services";
     private final String IMG_ENDPOINT = "/search/images";
 
-    private AsyncHttpClient client = new AsyncHttpClient();
+    private AsyncHttpClient client;
 
     private final int pagesize = 8;
 
     private String query;
     private int currentOffset = 0;
-    private String filterSize;
-    private String filterColor;
-    private String filterType;
-    private String filterSite;
+    private ImageFiltersModel filters;
 
-    public GoogleAPIClient(String query) {
+    public GoogleAPIClient(String query, ImageFiltersModel filters) {
         this.query = query;
+        this.client = new AsyncHttpClient();
+        this.filters = filters;
     }
 
     public int getCurrentOffset() {
@@ -42,36 +43,12 @@ public class GoogleAPIClient {
         this.currentOffset = currentOffset;
     }
 
-    public String getFilterSize() {
-        return filterSize;
+    public void setFilter(ImageFiltersModel filter) {
+        this.filters = filter;
     }
 
-    public void setFilterSize(String filterSize) {
-        this.filterSize = filterSize;
-    }
-
-    public String getFilterColor() {
-        return filterColor;
-    }
-
-    public void setFilterColor(String filterColor) {
-        this.filterColor = filterColor;
-    }
-
-    public String getFilterType() {
-        return filterType;
-    }
-
-    public void setFilterType(String filterType) {
-        this.filterType = filterType;
-    }
-
-    public String getFilterSite() {
-        return filterSite;
-    }
-
-    public void setFilterSite(String filterSite) {
-        this.filterSite = filterSite;
+    public ImageFiltersModel getFilters() {
+        return filters;
     }
 
     public void setNextPage() {
@@ -85,7 +62,20 @@ public class GoogleAPIClient {
         requestParams.put("start", currentOffset);
         requestParams.put("q", query);
 
+        setParamsIfExistent(requestParams, "imgcolor", filters.getColor());
+        setParamsIfExistent(requestParams, "imgsz", filters.getSize());
+        setParamsIfExistent(requestParams, "imgtype", filters.getType());
+        setParamsIfExistent(requestParams, "as_sitesearch", filters.getSite());
+
+        Log.i(TAG, "REQUEST: " + requestParams.toString());
+
         client.get(BASE_URL + IMG_ENDPOINT, requestParams, responseHandler);
+    }
+
+    private void setParamsIfExistent(RequestParams requestParamsInstance, String key, String value) {
+        if(value != null && !value.isEmpty()) {
+            requestParamsInstance.put(key, value);
+        }
     }
 
     public static JSONArray getJSONResults(JSONObject response) {
