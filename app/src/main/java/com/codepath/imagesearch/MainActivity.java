@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,11 +13,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -24,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -36,6 +41,8 @@ public class MainActivity extends ActionBarActivity {
     ImagesAdapter imgAdapter;
     GoogleAPIClient apiClient;
     ImageFiltersModel currentFilters;
+
+    public static ArrayList imagesURLs = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,5 +157,14 @@ public class MainActivity extends ActionBarActivity {
                 Log.i(TAG, responseString);
             }
         });
+    }
+
+    public void onThumbClick(View view) {
+        View parentView = (View) view.getParent();
+        TextView tvURL = (TextView) parentView.findViewById(R.id.tvURL);
+
+        Intent fullscreenIntent = new Intent(this, FullscreenImageActivity.class);
+        fullscreenIntent.putExtra("imgURL", tvURL.getText().toString());
+        startActivity(fullscreenIntent);
     }
 }
